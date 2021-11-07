@@ -1,13 +1,7 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
+import "github.com/i-vasilkov/go-todo-app/internal/app"
 
 func main() {
-	for {
-		fmt.Println("Starting application")
-		time.Sleep(time.Second)
-	}
+	app.Run()
 }
