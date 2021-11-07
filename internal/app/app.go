@@ -9,7 +9,7 @@ import (
 func Run() {
 	handler := delivery.NewHandler()
 
-	srv := server.NewServer(handler)
+	srv := server.NewServer(handler.Init())
 	if err := srv.Run(); err != nil {
 		log.Fatal(err.Error())
 	}
