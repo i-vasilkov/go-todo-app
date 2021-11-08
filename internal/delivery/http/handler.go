@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
+	v1 "github.com/i-vasilkov/go-todo-app/internal/delivery/http/v1"
 	"github.com/i-vasilkov/go-todo-app/internal/service"
 	"net/http"
 )
@@ -20,6 +21,12 @@ func (h *Handler) Init() http.Handler {
 	router := gin.Default()
 
 	router.GET("/", h.AppMsg)
+
+	handlerV1 := v1.NewHandler(h.services)
+	api := router.Group("/api")
+	{
+		handlerV1.Init(api)
+	}
 
 	return router
 }
