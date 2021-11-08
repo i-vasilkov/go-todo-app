@@ -1,11 +1,15 @@
 package service
 
 type Services struct {
-	todo *ToDoService
+	ToDo *ToDoService
 }
 
-func NewServices() *Services {
+type Repositories struct {
+	ToDo ToDoRepositoryI
+}
+
+func NewServices(rep Repositories) *Services {
 	return &Services{
-		todo: NewToDo(),
+		ToDo: NewToDo(rep.ToDo),
 	}
 }

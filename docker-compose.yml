@@ -9,3 +9,18 @@ services:
       - "8081:8080"
     volumes:
       - ./.bin/:/root/
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:4.4-bionic
+    volumes:
+      - ./.data/mongo:/data/db
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+      - MONGODB_DATABASE=todo
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+    ports:
+      - "27018:27017"

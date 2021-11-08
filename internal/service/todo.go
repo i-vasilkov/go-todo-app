@@ -6,28 +6,39 @@ import (
 )
 
 type ToDoService struct {
+	rep ToDoRepositoryI
 }
 
-func NewToDo() *ToDoService {
-	return &ToDoService{}
+type ToDoRepositoryI interface {
+	Get(ctx context.Context, id string) (domain.Todo, error)
+	GetAll(ctx context.Context) ([]domain.Todo, error)
+	Create(ctx context.Context, in domain.CreateTodoInput) (domain.Todo, error)
+	Update(ctx context.Context, in domain.UpdateTodoInput) (domain.Todo, error)
+	Delete(ctx context.Context, id string) error
+}
+
+func NewToDo(rep ToDoRepositoryI) *ToDoService {
+	return &ToDoService{
+		rep: rep,
+	}
 }
 
 func (t *ToDoService) Get(ctx context.Context, id string) (domain.Todo, error) {
-	return domain.Todo{}, nil
+	return t.rep.Get(ctx, id)
 }
 
 func (t *ToDoService) GetAll(ctx context.Context) ([]domain.Todo, error) {
-	return nil, nil
+	return t.rep.GetAll(ctx)
 }
 
 func (t *ToDoService) Create(ctx context.Context, in domain.CreateTodoInput) (domain.Todo, error) {
-	return domain.Todo{}, nil
+	return t.rep.Create(ctx, in)
 }
 
 func (t *ToDoService) Update(ctx context.Context, in domain.UpdateTodoInput) (domain.Todo, error) {
-	return domain.Todo{}, nil
+	return t.rep.Update(ctx, in)
 }
 
 func (t *ToDoService) Delete(ctx context.Context, id string) error {
-	return nil
+	return t.rep.Delete(ctx, id)
 }
