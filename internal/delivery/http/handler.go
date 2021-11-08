@@ -2,14 +2,18 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/i-vasilkov/go-todo-app/internal/service"
 	"net/http"
 )
 
 type Handler struct {
+	services *service.Services
 }
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(services *service.Services) *Handler {
+	return &Handler{
+		services: services,
+	}
 }
 
 func (h *Handler) Init() http.Handler {
