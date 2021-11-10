@@ -28,7 +28,7 @@ func (t *ToDoRepository) Create(ctx context.Context, in domain.CreateTodoInput) 
 	return domain.Todo{}, nil
 }
 
-func (t *ToDoRepository) Update(ctx context.Context, in domain.UpdateTodoInput) (domain.Todo, error) {
+func (t *ToDoRepository) Update(ctx context.Context, id string, in domain.UpdateTodoInput) (domain.Todo, error) {
 	return domain.Todo{}, nil
 }
 

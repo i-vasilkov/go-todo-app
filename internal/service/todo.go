@@ -13,7 +13,7 @@ type ToDoRepositoryI interface {
 	Get(ctx context.Context, id string) (domain.Todo, error)
 	GetAll(ctx context.Context) ([]domain.Todo, error)
 	Create(ctx context.Context, in domain.CreateTodoInput) (domain.Todo, error)
-	Update(ctx context.Context, in domain.UpdateTodoInput) (domain.Todo, error)
+	Update(ctx context.Context, id string, in domain.UpdateTodoInput) (domain.Todo, error)
 	Delete(ctx context.Context, id string) error
 }
 
@@ -35,8 +35,8 @@ func (t *ToDoService) Create(ctx context.Context, in domain.CreateTodoInput) (do
 	return t.rep.Create(ctx, in)
 }
 
-func (t *ToDoService) Update(ctx context.Context, in domain.UpdateTodoInput) (domain.Todo, error) {
-	return t.rep.Update(ctx, in)
+func (t *ToDoService) Update(ctx context.Context, id string, in domain.UpdateTodoInput) (domain.Todo, error) {
+	return t.rep.Update(ctx, id, in)
 }
 
 func (t *ToDoService) Delete(ctx context.Context, id string) error {
