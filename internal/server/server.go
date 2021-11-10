@@ -2,21 +2,21 @@ package server
 
 import (
 	"context"
+	"github.com/i-vasilkov/go-todo-app/internal/config"
 	"net/http"
-	"time"
 )
 
 type Server struct {
 	httpServer *http.Server
 }
 
-func NewServer(handler http.Handler) *Server {
+func NewServer(handler http.Handler, cfg config.Config) *Server {
 	return &Server{
 		httpServer: &http.Server{
-			Addr:         ":8080",
+			Addr:         cfg.Http.GetAddr(),
 			Handler:      handler,
-			ReadTimeout:  10 * time.Second,
-			WriteTimeout: 10 * time.Second,
+			ReadTimeout:  cfg.Http.ReadTimeout,
+			WriteTimeout: cfg.Http.WriteTimeout,
 		},
 	}
 }

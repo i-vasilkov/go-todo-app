@@ -1,0 +1,3 @@
+http:
+  readTimeout: 10s
+  writeTimeout: 10s

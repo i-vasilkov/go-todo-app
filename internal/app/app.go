@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/i-vasilkov/go-todo-app/internal/builder"
+	"github.com/i-vasilkov/go-todo-app/internal/config"
 	delivery "github.com/i-vasilkov/go-todo-app/internal/delivery/http"
 	"github.com/i-vasilkov/go-todo-app/internal/server"
 	"github.com/i-vasilkov/go-todo-app/internal/service"
@@ -9,26 +10,27 @@ import (
 	"log"
 )
 
-// todo: move to .env
-var (
-	mongoUri  = "mongodb://mongo:27017"
-	mongoUser = "root"
-	mongoPass = "root"
-	mongoDb   = "todo"
-)
-
-func Run() {
-	mongoClient, err := mongodb.NewClient(mongoUri, mongoUser, mongoPass)
+func Run(cfgPath, envPath string) {
+	cfg, err := config.Init(cfgPath, envPath)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	db := mongoClient.Database(mongoDb)
+
+	mongoClient, err := mongodb.NewClient(mongodb.Connection{
+		Uri:  cfg.Mongo.GetURI(),
+		User: cfg.Mongo.UserName,
+		Pass: cfg.Mongo.Password,
+	})
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	db := mongoClient.Database(cfg.Mongo.DbName)
 
 	repBuilder := builder.NewMongoRepositoriesBuilder(db)
 	services := service.NewServices(repBuilder.Build())
 	handler := delivery.NewHandler(services)
 
-	srv := server.NewServer(handler.Init())
+	srv := server.NewServer(handler.Init(), cfg)
 	if err := srv.Run(); err != nil {
 		log.Fatal(err.Error())
 	}

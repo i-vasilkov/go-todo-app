@@ -6,11 +6,17 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func NewClient(uri, user, pass string) (*mongo.Client, error) {
-	opts := options.Client().ApplyURI(uri)
+type Connection struct {
+	Uri  string
+	User string
+	Pass string
+}
+
+func NewClient(con Connection) (*mongo.Client, error) {
+	opts := options.Client().ApplyURI(con.Uri)
 	opts.SetAuth(options.Credential{
-		Username: user,
-		Password: pass,
+		Username: con.User,
+		Password: con.Pass,
 	})
 
 	client, err := mongo.NewClient(opts)
