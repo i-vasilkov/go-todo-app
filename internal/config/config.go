@@ -10,6 +10,8 @@ import (
 type Config struct {
 	Mongo MongoConfig
 	Http  HttpConfig
+	Auth  AuthConfig
+	Jwt   JwtConfig
 }
 
 type MongoConfig struct {
@@ -33,6 +35,15 @@ type HttpConfig struct {
 
 func (hc *HttpConfig) GetAddr() string {
 	return fmt.Sprintf("%s:%s", hc.Host, hc.Port)
+}
+
+type AuthConfig struct {
+	PwdSalt string `mapstructure:"PASSWORD_SALT"`
+}
+
+type JwtConfig struct {
+	Signature string        `mapstructure:"JWT_SIGN"`
+	Ttl       time.Duration `mapstructure:"ttl"`
 }
 
 func Init(paths ...string) (Config, error) {
@@ -73,6 +84,14 @@ func UnmarshalConfig() (Config, error) {
 		return cfg, err
 	}
 
+	if err := UnmarshalAuthCfg(&cfg); err != nil {
+		return cfg, err
+	}
+
+	if err := UnmarshalJwtCfg(&cfg); err != nil {
+		return cfg, err
+	}
+
 	return cfg, nil
 }
 
@@ -85,4 +104,15 @@ func UnmarshalHttpCfg(cfg *Config) error {
 		return err
 	}
 	return viper.UnmarshalKey("http", &cfg.Http)
+}
+
+func UnmarshalAuthCfg(cfg *Config) error {
+	return viper.Unmarshal(&cfg.Auth)
+}
+
+func UnmarshalJwtCfg(cfg *Config) error {
+	if err := viper.Unmarshal(&cfg.Jwt); err != nil {
+		return err
+	}
+	return viper.UnmarshalKey("jwt", &cfg.Jwt)
 }

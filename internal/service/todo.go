@@ -17,7 +17,7 @@ type ToDoRepositoryI interface {
 	Delete(ctx context.Context, id string) error
 }
 
-func NewToDo(rep ToDoRepositoryI) *ToDoService {
+func NewToDoService(rep ToDoRepositoryI) *ToDoService {
 	return &ToDoService{
 		rep: rep,
 	}

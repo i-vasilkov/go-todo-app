@@ -7,7 +7,7 @@ import (
 )
 
 func (h *Handler) InitTodoRoutes(router *gin.RouterGroup) {
-	todo := router.Group("/todo")
+	todo := router.Group("/todo", h.AuthMiddleware)
 	{
 		todo.GET("/", h.todoGetAll)
 		todo.POST("/", h.todoCreate)

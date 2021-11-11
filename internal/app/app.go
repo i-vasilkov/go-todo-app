@@ -6,7 +6,9 @@ import (
 	delivery "github.com/i-vasilkov/go-todo-app/internal/delivery/http"
 	"github.com/i-vasilkov/go-todo-app/internal/server"
 	"github.com/i-vasilkov/go-todo-app/internal/service"
+	"github.com/i-vasilkov/go-todo-app/pkg/auth/jwt"
 	"github.com/i-vasilkov/go-todo-app/pkg/database/mongodb"
+	"github.com/i-vasilkov/go-todo-app/pkg/hash"
 	"log"
 )
 
@@ -26,8 +28,13 @@ func Run(cfgPath, envPath string) {
 	}
 	db := mongoClient.Database(cfg.Mongo.DbName)
 
+	deps := service.Dependencies{
+		Hasher:     hash.NewSHA1Hasher(cfg.Auth.PwdSalt),
+		JwtManager: jwt.NewManager(cfg.Jwt.Ttl, cfg.Jwt.Signature),
+	}
+
 	repBuilder := builder.NewMongoRepositoriesBuilder(db)
-	services := service.NewServices(repBuilder.Build())
+	services := service.NewServices(repBuilder.Build(), deps)
 	handler := delivery.NewHandler(services)
 
 	srv := server.NewServer(handler.Init(), cfg)

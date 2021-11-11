@@ -1,3 +1,5 @@
 http:
   readTimeout: 10s
   writeTimeout: 10s
+jwt:
+  ttl: 24h

@@ -1,15 +1,28 @@
 package service
 
+import (
+	"github.com/i-vasilkov/go-todo-app/pkg/auth/jwt"
+	"github.com/i-vasilkov/go-todo-app/pkg/hash"
+)
+
 type Services struct {
 	ToDo *ToDoService
+	Auth *AuthService
 }
 
 type Repositories struct {
 	ToDo ToDoRepositoryI
+	User UserRepositoryI
 }
 
-func NewServices(rep Repositories) *Services {
+type Dependencies struct {
+	Hasher     hash.Hasher
+	JwtManager *jwt.Manager
+}
+
+func NewServices(rep Repositories, deps Dependencies) *Services {
 	return &Services{
-		ToDo: NewToDo(rep.ToDo),
+		ToDo: NewToDoService(rep.ToDo),
+		Auth: NewAuthService(rep.User, deps.Hasher, deps.JwtManager),
 	}
 }

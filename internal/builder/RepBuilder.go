@@ -21,5 +21,6 @@ func NewMongoRepositoriesBuilder(db *mongo.Database) *MongoRepositoriesBuilder {
 func (rb *MongoRepositoriesBuilder) Build() service.Repositories {
 	return service.Repositories{
 		ToDo: mongorep.NewMongoToDoRepository(rb.db),
+		User: mongorep.NewMongoUserRepository(rb.db),
 	}
 }
