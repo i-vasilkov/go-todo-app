@@ -2,8 +2,6 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
-	v1 "github.com/i-vasilkov/go-todo-app/internal/delivery/http/v1"
-	"github.com/i-vasilkov/go-todo-app/internal/service"
 	"net/http"
 
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -13,10 +11,15 @@ import (
 )
 
 type Handler struct {
-	services *service.Services
+	services *Services
 }
 
-func NewHandler(services *service.Services) *Handler {
+type Services struct {
+	Auth AuthServiceI
+	Task TaskServiceI
+}
+
+func NewHandler(services *Services) *Handler {
 	return &Handler{
 		services: services,
 	}
@@ -27,10 +30,13 @@ func (h *Handler) Init() http.Handler {
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	handlerV1 := v1.NewHandler(h.services)
 	api := router.Group("/api")
 	{
-		handlerV1.Init(api)
+		v1 := api.Group("/v1")
+		{
+			h.InitTaskRoutes(v1)
+			h.InitAuthRoutes(v1)
+		}
 	}
 
 	return router

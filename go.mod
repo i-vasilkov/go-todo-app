@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.7.4
 	github.com/go-openapi/spec v0.20.4 // indirect
 	github.com/go-playground/validator/v10 v10.4.1
+	github.com/golang/mock v1.6.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/spf13/viper v1.9.0
 	github.com/swaggo/gin-swagger v1.3.3

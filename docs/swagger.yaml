@@ -47,7 +47,7 @@ definitions:
     required:
     - name
     type: object
-  v1.ErrorResponse:
+  http.ErrorResponse:
     properties:
       messages:
         items:
@@ -57,7 +57,7 @@ definitions:
         example: false
         type: boolean
     type: object
-  v1.SuccessResponse:
+  http.SuccessResponse:
     properties:
       data:
         x-nullable: true
@@ -91,7 +91,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/v1.SuccessResponse'
+            - $ref: '#/definitions/http.SuccessResponse'
             - properties:
                 data:
                   type: string
@@ -99,15 +99,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
       summary: Sign In
       tags:
       - Auth
@@ -130,7 +130,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/v1.SuccessResponse'
+            - $ref: '#/definitions/http.SuccessResponse'
             - properties:
                 data:
                   type: string
@@ -138,15 +138,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
       summary: Sign Up
       tags:
       - Auth
@@ -162,7 +162,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/v1.SuccessResponse'
+            - $ref: '#/definitions/http.SuccessResponse'
             - properties:
                 data:
                   items:
@@ -172,15 +172,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
       security:
       - ApiAuth: []
       summary: Getting tasks
@@ -204,7 +204,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/v1.SuccessResponse'
+            - $ref: '#/definitions/http.SuccessResponse'
             - properties:
                 data:
                   $ref: '#/definitions/domain.Task'
@@ -212,15 +212,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
       security:
       - ApiAuth: []
       summary: Creating task
@@ -238,7 +238,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/v1.SuccessResponse'
+            - $ref: '#/definitions/http.SuccessResponse'
             - properties:
                 data:
                   type: object
@@ -246,15 +246,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
       security:
       - ApiAuth: []
       summary: Deleting task
@@ -271,7 +271,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/v1.SuccessResponse'
+            - $ref: '#/definitions/http.SuccessResponse'
             - properties:
                 data:
                   $ref: '#/definitions/domain.Task'
@@ -279,15 +279,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
       security:
       - ApiAuth: []
       summary: Getting one task
@@ -311,7 +311,7 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/v1.SuccessResponse'
+            - $ref: '#/definitions/http.SuccessResponse'
             - properties:
                 data:
                   $ref: '#/definitions/domain.Task'
@@ -319,15 +319,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/v1.ErrorResponse'
+            $ref: '#/definitions/http.ErrorResponse'
       security:
       - ApiAuth: []
       summary: Updating task

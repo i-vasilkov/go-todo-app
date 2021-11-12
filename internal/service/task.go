@@ -9,14 +9,6 @@ type TaskService struct {
 	rep TaskRepositoryI
 }
 
-type TaskRepositoryI interface {
-	Get(ctx context.Context, id, userId string) (domain.Task, error)
-	GetAll(ctx context.Context, userId string) ([]domain.Task, error)
-	Create(ctx context.Context, userId string, in domain.CreateTaskInput) (domain.Task, error)
-	Update(ctx context.Context, id, userId string, in domain.UpdateTaskInput) (domain.Task, error)
-	Delete(ctx context.Context, id, userId string) error
-}
-
 func NewTaskService(rep TaskRepositoryI) *TaskService {
 	return &TaskService{
 		rep: rep,

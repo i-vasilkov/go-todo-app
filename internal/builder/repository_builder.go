@@ -6,10 +6,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type RepositoriesBuilder interface {
-	Build() service.Repositories
-}
-
 type MongoRepositoriesBuilder struct {
 	db *mongo.Database
 }

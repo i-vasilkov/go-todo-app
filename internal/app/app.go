@@ -3,7 +3,7 @@ package app
 import (
 	"github.com/i-vasilkov/go-todo-app/internal/builder"
 	"github.com/i-vasilkov/go-todo-app/internal/config"
-	delivery "github.com/i-vasilkov/go-todo-app/internal/delivery/http"
+	delivery "github.com/i-vasilkov/go-todo-app/internal/handler/http"
 	"github.com/i-vasilkov/go-todo-app/internal/server"
 	"github.com/i-vasilkov/go-todo-app/internal/service"
 	"github.com/i-vasilkov/go-todo-app/pkg/auth/jwt"
@@ -45,8 +45,8 @@ func Run(cfgPath, envPath string) {
 	}
 
 	repBuilder := builder.NewMongoRepositoriesBuilder(db)
-	services := service.NewServices(repBuilder.Build(), &deps)
-	handler := delivery.NewHandler(services)
+	serviceBuilder := builder.NewAppServiceBuilder(&deps, repBuilder.Build())
+	handler := delivery.NewHandler(serviceBuilder.Build())
 
 	srv := server.NewServer(handler.Init(), &cfg)
 	if err := srv.Run(); err != nil {
