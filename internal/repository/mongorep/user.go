@@ -22,7 +22,7 @@ func NewMongoUserRepository(db *mongo.Database) *UserRepository {
 func (rep *UserRepository) Create(ctx context.Context, in domain.CreateUserInput) (domain.User, error) {
 	var user domain.User
 
-	result, err := rep.db.Collection("users").
+	result, err := rep.db.Collection(usersCollection).
 		InsertOne(ctx, bson.M{
 			"password":   in.Password,
 			"login":      in.Login,
@@ -33,7 +33,7 @@ func (rep *UserRepository) Create(ctx context.Context, in domain.CreateUserInput
 	}
 
 	objId := result.InsertedID.(primitive.ObjectID)
-	err = rep.db.Collection("users").FindOne(ctx, bson.M{"_id": objId}).Decode(&user)
+	err = rep.db.Collection(usersCollection).FindOne(ctx, bson.M{"_id": objId}).Decode(&user)
 
 	return user, err
 }
@@ -41,7 +41,7 @@ func (rep *UserRepository) Create(ctx context.Context, in domain.CreateUserInput
 func (rep *UserRepository) GetByCredentials(ctx context.Context, in domain.LoginUserInput) (domain.User, error) {
 	var user domain.User
 
-	err := rep.db.Collection("users").
+	err := rep.db.Collection(usersCollection).
 		FindOne(ctx, bson.M{
 			"login":    in.Login,
 			"password": in.Password,
@@ -59,6 +59,6 @@ func (rep *UserRepository) Get(ctx context.Context, id string) (domain.User, err
 		return user, err
 	}
 
-	err = rep.db.Collection("users").FindOne(ctx, bson.M{"_id": objId}).Decode(&user)
+	err = rep.db.Collection(usersCollection).FindOne(ctx, bson.M{"_id": objId}).Decode(&user)
 	return user, err
 }

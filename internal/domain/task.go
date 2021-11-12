@@ -2,7 +2,7 @@ package domain
 
 import "time"
 
-type Todo struct {
+type Task struct {
 	Id        string    `json:"id" bson:"_id,omitempty"`
 	Name      string    `json:"name" bson:"name,omitempty"`
 	UserId    string    `json:"user_id" bson:"user_id,omitempty"`
@@ -10,10 +10,10 @@ type Todo struct {
 	UpdatedAt time.Time `json:"updated_at" bson:"updated_at"`
 }
 
-type UpdateTodoInput struct {
+type UpdateTaskInput struct {
 	Name string `json:"name" binding:"required"`
 }
 
-type CreateTodoInput struct {
+type CreateTaskInput struct {
 	Name string `json:"name" binding:"required"`
 }

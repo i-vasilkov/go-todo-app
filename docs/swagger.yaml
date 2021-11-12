@@ -1,6 +1,6 @@
 basePath: /api/
 definitions:
-  domain.CreateTodoInput:
+  domain.CreateTaskInput:
     properties:
       name:
         type: string
@@ -27,7 +27,7 @@ definitions:
     - login
     - password
     type: object
-  domain.Todo:
+  domain.Task:
     properties:
       created_at:
         type: string
@@ -40,7 +40,7 @@ definitions:
       user_id:
         type: string
     type: object
-  domain.UpdateTodoInput:
+  domain.UpdateTaskInput:
     properties:
       name:
         type: string
@@ -150,11 +150,11 @@ paths:
       summary: Sign Up
       tags:
       - Auth
-  /todo:
+  /task:
     get:
       consumes:
       - application/json
-      description: Get user todos
+      description: Get user tasks
       produces:
       - application/json
       responses:
@@ -166,7 +166,7 @@ paths:
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/domain.Todo'
+                    $ref: '#/definitions/domain.Task'
                   type: array
               type: object
         "400":
@@ -183,20 +183,20 @@ paths:
             $ref: '#/definitions/v1.ErrorResponse'
       security:
       - ApiAuth: []
-      summary: Getting todos
+      summary: Getting tasks
       tags:
-      - Todo
+      - Task
     post:
       consumes:
       - application/json
-      description: Create todo by input data
+      description: Create task by input data
       parameters:
       - description: input data
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/domain.CreateTodoInput'
+          $ref: '#/definitions/domain.CreateTaskInput'
       produces:
       - application/json
       responses:
@@ -207,7 +207,7 @@ paths:
             - $ref: '#/definitions/v1.SuccessResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/domain.Todo'
+                  $ref: '#/definitions/domain.Task'
               type: object
         "400":
           description: Bad Request
@@ -223,14 +223,14 @@ paths:
             $ref: '#/definitions/v1.ErrorResponse'
       security:
       - ApiAuth: []
-      summary: Creating todo
+      summary: Creating task
       tags:
-      - Todo
-  /todo/{id}:
+      - Task
+  /task/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete todo by id
+      description: Delete task by id
       produces:
       - application/json
       responses:
@@ -257,13 +257,13 @@ paths:
             $ref: '#/definitions/v1.ErrorResponse'
       security:
       - ApiAuth: []
-      summary: Deleting todo
+      summary: Deleting task
       tags:
-      - Todo
+      - Task
     get:
       consumes:
       - application/json
-      description: Get one todo by id
+      description: Get one task by id
       produces:
       - application/json
       responses:
@@ -274,7 +274,7 @@ paths:
             - $ref: '#/definitions/v1.SuccessResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/domain.Todo'
+                  $ref: '#/definitions/domain.Task'
               type: object
         "400":
           description: Bad Request
@@ -290,20 +290,20 @@ paths:
             $ref: '#/definitions/v1.ErrorResponse'
       security:
       - ApiAuth: []
-      summary: Getting one todo
+      summary: Getting one task
       tags:
-      - Todo
+      - Task
     put:
       consumes:
       - application/json
-      description: Update todo by input data
+      description: Update task by input data
       parameters:
       - description: input data
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/domain.UpdateTodoInput'
+          $ref: '#/definitions/domain.UpdateTaskInput'
       produces:
       - application/json
       responses:
@@ -314,7 +314,7 @@ paths:
             - $ref: '#/definitions/v1.SuccessResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/domain.Todo'
+                  $ref: '#/definitions/domain.Task'
               type: object
         "400":
           description: Bad Request
@@ -330,9 +330,9 @@ paths:
             $ref: '#/definitions/v1.ErrorResponse'
       security:
       - ApiAuth: []
-      summary: Updating todo
+      summary: Updating task
       tags:
-      - Todo
+      - Task
 securityDefinitions:
   ApiAuth:
     in: header

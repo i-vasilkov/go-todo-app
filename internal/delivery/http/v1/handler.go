@@ -16,7 +16,7 @@ func NewHandler(services *service.Services) *Handler {
 func (h *Handler) Init(router *gin.RouterGroup) {
 	v1 := router.Group("/v1")
 	{
-		h.InitTodoRoutes(v1)
+		h.InitTaskRoutes(v1)
 		h.InitAuthRoutes(v1)
 	}
 }

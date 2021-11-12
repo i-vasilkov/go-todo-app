@@ -151,14 +151,14 @@ var doc = `{
                 }
             }
         },
-        "/todo": {
+        "/task": {
             "get": {
                 "security": [
                     {
                         "ApiAuth": []
                     }
                 ],
-                "description": "Get user todos",
+                "description": "Get user tasks",
                 "consumes": [
                     "application/json"
                 ],
@@ -166,9 +166,9 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Todo"
+                    "Task"
                 ],
-                "summary": "Getting todos",
+                "summary": "Getting tasks",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -183,7 +183,7 @@ var doc = `{
                                         "data": {
                                             "type": "array",
                                             "items": {
-                                                "$ref": "#/definitions/domain.Todo"
+                                                "$ref": "#/definitions/domain.Task"
                                             }
                                         }
                                     }
@@ -217,7 +217,7 @@ var doc = `{
                         "ApiAuth": []
                     }
                 ],
-                "description": "Create todo by input data",
+                "description": "Create task by input data",
                 "consumes": [
                     "application/json"
                 ],
@@ -225,9 +225,9 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Todo"
+                    "Task"
                 ],
-                "summary": "Creating todo",
+                "summary": "Creating task",
                 "parameters": [
                     {
                         "description": "input data",
@@ -235,7 +235,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.CreateTodoInput"
+                            "$ref": "#/definitions/domain.CreateTaskInput"
                         }
                     }
                 ],
@@ -251,7 +251,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/domain.Todo"
+                                            "$ref": "#/definitions/domain.Task"
                                         }
                                     }
                                 }
@@ -279,14 +279,14 @@ var doc = `{
                 }
             }
         },
-        "/todo/{id}": {
+        "/task/{id}": {
             "get": {
                 "security": [
                     {
                         "ApiAuth": []
                     }
                 ],
-                "description": "Get one todo by id",
+                "description": "Get one task by id",
                 "consumes": [
                     "application/json"
                 ],
@@ -294,9 +294,9 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Todo"
+                    "Task"
                 ],
-                "summary": "Getting one todo",
+                "summary": "Getting one task",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -309,7 +309,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/domain.Todo"
+                                            "$ref": "#/definitions/domain.Task"
                                         }
                                     }
                                 }
@@ -342,7 +342,7 @@ var doc = `{
                         "ApiAuth": []
                     }
                 ],
-                "description": "Update todo by input data",
+                "description": "Update task by input data",
                 "consumes": [
                     "application/json"
                 ],
@@ -350,9 +350,9 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Todo"
+                    "Task"
                 ],
-                "summary": "Updating todo",
+                "summary": "Updating task",
                 "parameters": [
                     {
                         "description": "input data",
@@ -360,7 +360,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.UpdateTodoInput"
+                            "$ref": "#/definitions/domain.UpdateTaskInput"
                         }
                     }
                 ],
@@ -376,7 +376,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/domain.Todo"
+                                            "$ref": "#/definitions/domain.Task"
                                         }
                                     }
                                 }
@@ -409,7 +409,7 @@ var doc = `{
                         "ApiAuth": []
                     }
                 ],
-                "description": "Delete todo by id",
+                "description": "Delete task by id",
                 "consumes": [
                     "application/json"
                 ],
@@ -417,9 +417,9 @@ var doc = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Todo"
+                    "Task"
                 ],
-                "summary": "Deleting todo",
+                "summary": "Deleting task",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -462,7 +462,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "domain.CreateTodoInput": {
+        "domain.CreateTaskInput": {
             "type": "object",
             "required": [
                 "name"
@@ -503,7 +503,7 @@ var doc = `{
                 }
             }
         },
-        "domain.Todo": {
+        "domain.Task": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -523,7 +523,7 @@ var doc = `{
                 }
             }
         },
-        "domain.UpdateTodoInput": {
+        "domain.UpdateTaskInput": {
             "type": "object",
             "required": [
                 "name"

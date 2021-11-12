@@ -6,27 +6,27 @@ import (
 	"net/http"
 )
 
-func (h *Handler) InitTodoRoutes(router *gin.RouterGroup) {
-	todo := router.Group("/todo", h.AuthMiddleware)
+func (h *Handler) InitTaskRoutes(router *gin.RouterGroup) {
+	task := router.Group("/task", h.AuthMiddleware)
 	{
-		todo.GET("/", h.todoGetAll)
-		todo.POST("/", h.todoCreate)
-		todo.GET("/:id", h.todoGetOne)
-		todo.PUT("/:id", h.todoUpdate)
-		todo.DELETE("/:id", h.todoDelete)
+		task.GET("/", h.taskGetAll)
+		task.POST("/", h.taskCreate)
+		task.GET("/:id", h.taskGetOne)
+		task.PUT("/:id", h.taskUpdate)
+		task.DELETE("/:id", h.taskDelete)
 	}
 }
 
-// @Summary Getting one todo
-// @Description Get one todo by id
+// @Summary Getting one task
+// @Description Get one task by id
 // @Security ApiAuth
-// @Tags Todo
+// @Tags Task
 // @Accept json
 // @Produce json
-// @Success 200 {object} SuccessResponse{data=domain.Todo}
+// @Success 200 {object} SuccessResponse{data=domain.Task}
 // @Failure 400,422,500 {object} ErrorResponse
-// @Router /todo/{id} [get]
-func (h *Handler) todoGetOne(ctx *gin.Context) {
+// @Router /task/{id} [get]
+func (h *Handler) taskGetOne(ctx *gin.Context) {
 	id := ctx.Param("id")
 	userId, err := GetUserIdFromCtx(ctx)
 	if err != nil {
@@ -34,52 +34,52 @@ func (h *Handler) todoGetOne(ctx *gin.Context) {
 		return
 	}
 
-	todo, err := h.services.ToDo.Get(ctx, id, userId)
+	task, err := h.services.Task.Get(ctx, id, userId)
 	if err != nil {
 		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	NewSuccessResponse(ctx, todo)
+	NewSuccessResponse(ctx, task)
 }
 
-// @Summary Getting todos
-// @Description Get user todos
+// @Summary Getting tasks
+// @Description Get user tasks
 // @Security ApiAuth
-// @Tags Todo
+// @Tags Task
 // @Accept json
 // @Produce json
-// @Success 200 {object} SuccessResponse{data=[]domain.Todo}
+// @Success 200 {object} SuccessResponse{data=[]domain.Task}
 // @Failure 400,422,500 {object} ErrorResponse
-// @Router /todo [get]
-func (h *Handler) todoGetAll(ctx *gin.Context) {
+// @Router /task [get]
+func (h *Handler) taskGetAll(ctx *gin.Context) {
 	userId, err := GetUserIdFromCtx(ctx)
 	if err != nil {
 		NewErrorResponseFromError(ctx, http.StatusUnauthorized, err)
 		return
 	}
 
-	todos, err := h.services.ToDo.GetAll(ctx, userId)
+	tasks, err := h.services.Task.GetAll(ctx, userId)
 	if err != nil {
 		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	NewSuccessResponse(ctx, todos)
+	NewSuccessResponse(ctx, tasks)
 }
 
-// @Summary Creating todo
-// @Description Create todo by input data
+// @Summary Creating task
+// @Description Create task by input data
 // @Security ApiAuth
-// @Tags Todo
+// @Tags Task
 // @Accept json
 // @Produce json
-// @Param input body domain.CreateTodoInput true "input data"
-// @Success 200 {object} SuccessResponse{data=domain.Todo}
+// @Param input body domain.CreateTaskInput true "input data"
+// @Success 200 {object} SuccessResponse{data=domain.Task}
 // @Failure 400,422,500 {object} ErrorResponse
-// @Router /todo [post]
-func (h *Handler) todoCreate(ctx *gin.Context) {
-	var in domain.CreateTodoInput
+// @Router /task [post]
+func (h *Handler) taskCreate(ctx *gin.Context) {
+	var in domain.CreateTaskInput
 	if err := ctx.ShouldBind(&in); err != nil {
 		NewValidatorErrorResponse(ctx, err)
 		return
@@ -91,27 +91,27 @@ func (h *Handler) todoCreate(ctx *gin.Context) {
 		return
 	}
 
-	todo, err := h.services.ToDo.Create(ctx, userId, in)
+	task, err := h.services.Task.Create(ctx, userId, in)
 	if err != nil {
 		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	NewSuccessResponse(ctx, todo)
+	NewSuccessResponse(ctx, task)
 }
 
-// @Summary Updating todo
-// @Description Update todo by input data
+// @Summary Updating task
+// @Description Update task by input data
 // @Security ApiAuth
-// @Tags Todo
+// @Tags Task
 // @Accept json
 // @Produce json
-// @Param input body domain.UpdateTodoInput true "input data"
-// @Success 200 {object} SuccessResponse{data=domain.Todo}
+// @Param input body domain.UpdateTaskInput true "input data"
+// @Success 200 {object} SuccessResponse{data=domain.Task}
 // @Failure 400,422,500 {object} ErrorResponse
-// @Router /todo/{id} [put]
-func (h *Handler) todoUpdate(ctx *gin.Context) {
-	var in domain.UpdateTodoInput
+// @Router /task/{id} [put]
+func (h *Handler) taskUpdate(ctx *gin.Context) {
+	var in domain.UpdateTaskInput
 	if err := ctx.ShouldBind(&in); err != nil {
 		NewValidatorErrorResponse(ctx, err)
 		return
@@ -124,25 +124,25 @@ func (h *Handler) todoUpdate(ctx *gin.Context) {
 		return
 	}
 
-	todo, err := h.services.ToDo.Update(ctx, id, userId, in)
+	task, err := h.services.Task.Update(ctx, id, userId, in)
 	if err != nil {
 		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	NewSuccessResponse(ctx, todo)
+	NewSuccessResponse(ctx, task)
 }
 
-// @Summary Deleting todo
-// @Description Delete todo by id
+// @Summary Deleting task
+// @Description Delete task by id
 // @Security ApiAuth
-// @Tags Todo
+// @Tags Task
 // @Accept json
 // @Produce json
 // @Success 200 {object} SuccessResponse{data=object}
 // @Failure 400,422,500 {object} ErrorResponse
-// @Router /todo/{id} [delete]
-func (h *Handler) todoDelete(ctx *gin.Context) {
+// @Router /task/{id} [delete]
+func (h *Handler) taskDelete(ctx *gin.Context) {
 	id := ctx.Param("id")
 	userId, err := GetUserIdFromCtx(ctx)
 	if err != nil {
@@ -150,7 +150,7 @@ func (h *Handler) todoDelete(ctx *gin.Context) {
 		return
 	}
 
-	if err := h.services.ToDo.Delete(ctx, id, userId); err != nil {
+	if err := h.services.Task.Delete(ctx, id, userId); err != nil {
 		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
 		return
 	}

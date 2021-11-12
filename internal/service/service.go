@@ -6,12 +6,12 @@ import (
 )
 
 type Services struct {
-	ToDo *ToDoService
+	Task *TaskService
 	Auth *AuthService
 }
 
 type Repositories struct {
-	ToDo ToDoRepositoryI
+	Task TaskRepositoryI
 	User UserRepositoryI
 }
 
@@ -22,7 +22,7 @@ type Dependencies struct {
 
 func NewServices(rep *Repositories, deps *Dependencies) *Services {
 	return &Services{
-		ToDo: NewToDoService(rep.ToDo),
+		Task: NewTaskService(rep.Task),
 		Auth: NewAuthService(rep.User, deps.Hasher, deps.JwtManager),
 	}
 }
