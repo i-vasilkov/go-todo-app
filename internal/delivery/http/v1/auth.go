@@ -17,8 +17,8 @@ func (h *Handler) InitAuthRoutes(router *gin.RouterGroup) {
 
 func (h *Handler) authSignIn(ctx *gin.Context) {
 	var in domain.LoginUserInput
-	if err := ctx.BindJSON(&in); err != nil {
-		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+	if err := ctx.ShouldBind(&in); err != nil {
+		NewValidatorErrorResponse(ctx, err)
 		return
 	}
 
@@ -35,10 +35,11 @@ func (h *Handler) authSignIn(ctx *gin.Context) {
 
 func (h *Handler) authSignUp(ctx *gin.Context) {
 	var in domain.CreateUserInput
-	if err := ctx.BindJSON(&in); err != nil {
-		NewErrorResponseFromError(ctx, http.StatusUnprocessableEntity, err)
+	if err := ctx.ShouldBind(&in); err != nil {
+		NewValidatorErrorResponse(ctx, err)
 		return
 	}
+
 	fmt.Println(in)
 
 	token, err := h.services.Auth.SignUp(ctx, in)

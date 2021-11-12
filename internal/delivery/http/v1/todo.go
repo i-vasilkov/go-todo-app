@@ -52,8 +52,8 @@ func (h *Handler) todoGetAll(ctx *gin.Context) {
 
 func (h *Handler) todoCreate(ctx *gin.Context) {
 	var in domain.CreateTodoInput
-	if err := ctx.BindJSON(&in); err != nil {
-		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+	if err := ctx.ShouldBind(&in); err != nil {
+		NewValidatorErrorResponse(ctx, err)
 		return
 	}
 
@@ -74,8 +74,8 @@ func (h *Handler) todoCreate(ctx *gin.Context) {
 
 func (h *Handler) todoUpdate(ctx *gin.Context) {
 	var in domain.UpdateTodoInput
-	if err := ctx.BindJSON(&in); err != nil {
-		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+	if err := ctx.ShouldBind(&in); err != nil {
+		NewValidatorErrorResponse(ctx, err)
 		return
 	}
 
