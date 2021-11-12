@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -16,19 +17,19 @@ var (
 func (h *Handler) AuthMiddleware(ctx *gin.Context) {
 	authHeader := ctx.GetHeader(authHeaderName)
 	if authHeader == "" {
-		NewErrorResponse(ctx, http.StatusUnauthorized, "empty auth header")
+		NewErrorResponseFromError(ctx, http.StatusUnauthorized, errors.New("empty auth header"))
 		return
 	}
 
 	headerParts := strings.Split(authHeader, " ")
 	if len(headerParts) != 2 || headerParts[0] != bearerName {
-		NewErrorResponse(ctx, http.StatusUnauthorized, "not valid auth header")
+		NewErrorResponseFromError(ctx, http.StatusUnauthorized, errors.New("not valid auth header"))
 		return
 	}
 
 	id, err := h.services.Auth.CheckToken(ctx, headerParts[1])
 	if err != nil {
-		NewErrorResponse(ctx, http.StatusUnauthorized, err.Error())
+		NewErrorResponseFromError(ctx, http.StatusUnauthorized, err)
 		return
 	}
 

@@ -18,13 +18,13 @@ func (h *Handler) InitAuthRoutes(router *gin.RouterGroup) {
 func (h *Handler) authSignIn(ctx *gin.Context) {
 	var in domain.LoginUserInput
 	if err := ctx.BindJSON(&in); err != nil {
-		NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
 	token, err := h.services.Auth.SignIn(ctx, in)
 	if err != nil {
-		NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
@@ -36,14 +36,14 @@ func (h *Handler) authSignIn(ctx *gin.Context) {
 func (h *Handler) authSignUp(ctx *gin.Context) {
 	var in domain.CreateUserInput
 	if err := ctx.BindJSON(&in); err != nil {
-		NewErrorResponse(ctx, http.StatusUnprocessableEntity, err.Error())
+		NewErrorResponseFromError(ctx, http.StatusUnprocessableEntity, err)
 		return
 	}
 	fmt.Println(in)
 
 	token, err := h.services.Auth.SignUp(ctx, in)
 	if err != nil {
-		NewErrorResponse(ctx, http.StatusBadRequest, err.Error())
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
 		return
 	}
 

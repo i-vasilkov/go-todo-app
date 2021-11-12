@@ -17,68 +17,96 @@ func (h *Handler) InitTodoRoutes(router *gin.RouterGroup) {
 	}
 }
 
-func (h *Handler) todoGetOne(c *gin.Context) {
-	id := c.Param("id")
-
-	todo, err := h.services.ToDo.Get(c, id)
+func (h *Handler) todoGetOne(ctx *gin.Context) {
+	id := ctx.Param("id")
+	userId, err := GetUserIdFromCtx(ctx)
 	if err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponseFromError(ctx, http.StatusUnauthorized, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, todo)
-}
-
-func (h *Handler) todoGetAll(c *gin.Context) {
-	todos, err := h.services.ToDo.GetAll(c)
+	todo, err := h.services.ToDo.Get(ctx, id, userId)
 	if err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, todos)
+	NewSuccessResponse(ctx, todo)
 }
 
-func (h *Handler) todoCreate(c *gin.Context) {
+func (h *Handler) todoGetAll(ctx *gin.Context) {
+	userId, err := GetUserIdFromCtx(ctx)
+	if err != nil {
+		NewErrorResponseFromError(ctx, http.StatusUnauthorized, err)
+		return
+	}
+
+	todos, err := h.services.ToDo.GetAll(ctx, userId)
+	if err != nil {
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	NewSuccessResponse(ctx, todos)
+}
+
+func (h *Handler) todoCreate(ctx *gin.Context) {
 	var in domain.CreateTodoInput
-	if err := c.BindJSON(&in); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+	if err := ctx.BindJSON(&in); err != nil {
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	todo, err := h.services.ToDo.Create(c, in)
+	userId, err := GetUserIdFromCtx(ctx)
 	if err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponseFromError(ctx, http.StatusUnauthorized, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, todo)
+	todo, err := h.services.ToDo.Create(ctx, userId, in)
+	if err != nil {
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	NewSuccessResponse(ctx, todo)
 }
 
-func (h *Handler) todoUpdate(c *gin.Context) {
+func (h *Handler) todoUpdate(ctx *gin.Context) {
 	var in domain.UpdateTodoInput
-	if err := c.BindJSON(&in); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+	if err := ctx.BindJSON(&in); err != nil {
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	id := c.Param("id")
-
-	todo, err := h.services.ToDo.Update(c, id, in)
+	id := ctx.Param("id")
+	userId, err := GetUserIdFromCtx(ctx)
 	if err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+		NewErrorResponseFromError(ctx, http.StatusUnauthorized, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, todo)
+	todo, err := h.services.ToDo.Update(ctx, id, userId, in)
+	if err != nil {
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	NewSuccessResponse(ctx, todo)
 }
 
-func (h *Handler) todoDelete(c *gin.Context) {
-	id := c.Param("id")
-	if err := h.services.ToDo.Delete(c, id); err != nil {
-		NewErrorResponse(c, http.StatusBadRequest, err.Error())
+func (h *Handler) todoDelete(ctx *gin.Context) {
+	id := ctx.Param("id")
+	userId, err := GetUserIdFromCtx(ctx)
+	if err != nil {
+		NewErrorResponseFromError(ctx, http.StatusUnauthorized, err)
 		return
 	}
 
-	c.AbortWithStatus(http.StatusOK)
+	if err := h.services.ToDo.Delete(ctx, id, userId); err != nil {
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	NewSuccessResponse(ctx, nil)
 }
