@@ -8,13 +8,13 @@ import (
 )
 
 type ErrorResponse struct {
-	Success  bool     `json:"success"`
+	Success  bool     `json:"success" example:"false"`
 	Messages []string `json:"messages"`
 }
 
 type SuccessResponse struct {
-	Success bool        `json:"success"`
-	Data    interface{} `json:"data"`
+	Success bool        `json:"success" example:"true"`
+	Data    interface{} `json:"data" extensions:"x-nullable"`
 }
 
 func NewErrorResponse(ctx *gin.Context, code int, messages []string) {

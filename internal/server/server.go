@@ -10,7 +10,7 @@ type Server struct {
 	httpServer *http.Server
 }
 
-func NewServer(handler http.Handler, cfg config.Config) *Server {
+func NewServer(handler http.Handler, cfg *config.Config) *Server {
 	return &Server{
 		httpServer: &http.Server{
 			Addr:         cfg.Http.GetAddr(),

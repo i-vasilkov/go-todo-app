@@ -18,8 +18,8 @@ func NewMongoRepositoriesBuilder(db *mongo.Database) *MongoRepositoriesBuilder {
 	return &MongoRepositoriesBuilder{db: db}
 }
 
-func (rb *MongoRepositoriesBuilder) Build() service.Repositories {
-	return service.Repositories{
+func (rb *MongoRepositoriesBuilder) Build() *service.Repositories {
+	return &service.Repositories{
 		ToDo: mongorep.NewMongoToDoRepository(rb.db),
 		User: mongorep.NewMongoUserRepository(rb.db),
 	}

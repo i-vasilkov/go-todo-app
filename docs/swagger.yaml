@@ -1,0 +1,341 @@
+basePath: /api/
+definitions:
+  domain.CreateTodoInput:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  domain.CreateUserInput:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  domain.LoginUserInput:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    required:
+    - login
+    - password
+    type: object
+  domain.Todo:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  domain.UpdateTodoInput:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  v1.ErrorResponse:
+    properties:
+      messages:
+        items:
+          type: string
+        type: array
+      success:
+        example: false
+        type: boolean
+    type: object
+  v1.SuccessResponse:
+    properties:
+      data:
+        x-nullable: true
+      success:
+        example: true
+        type: boolean
+    type: object
+host: localhost:8000
+info:
+  contact: {}
+  description: API Server for ToDoApp
+  title: Golang ToDoApp API
+  version: "1.0"
+paths:
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Login user by credentials
+      parameters:
+      - description: SignIn Input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.LoginUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Sign In
+      tags:
+      - Auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Registration user by credentials
+      parameters:
+      - description: SignUp Input
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateUserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Sign Up
+      tags:
+      - Auth
+  /todo:
+    get:
+      consumes:
+      - application/json
+      description: Get user todos
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domain.Todo'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      security:
+      - ApiAuth: []
+      summary: Getting todos
+      tags:
+      - Todo
+    post:
+      consumes:
+      - application/json
+      description: Create todo by input data
+      parameters:
+      - description: input data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateTodoInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Todo'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      security:
+      - ApiAuth: []
+      summary: Creating todo
+      tags:
+      - Todo
+  /todo/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete todo by id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.SuccessResponse'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      security:
+      - ApiAuth: []
+      summary: Deleting todo
+      tags:
+      - Todo
+    get:
+      consumes:
+      - application/json
+      description: Get one todo by id
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Todo'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      security:
+      - ApiAuth: []
+      summary: Getting one todo
+      tags:
+      - Todo
+    put:
+      consumes:
+      - application/json
+      description: Update todo by input data
+      parameters:
+      - description: input data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/domain.UpdateTodoInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Todo'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      security:
+      - ApiAuth: []
+      summary: Updating todo
+      tags:
+      - Todo
+securityDefinitions:
+  ApiAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

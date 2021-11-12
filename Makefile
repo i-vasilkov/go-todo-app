@@ -4,3 +4,6 @@ build:
 
 run: build
 	docker-compose up --remove-orphans app
+
+swag:
+	swag init -g internal/app/app.go

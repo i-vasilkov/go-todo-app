@@ -20,7 +20,7 @@ type Dependencies struct {
 	JwtManager *jwt.Manager
 }
 
-func NewServices(rep Repositories, deps Dependencies) *Services {
+func NewServices(rep *Repositories, deps *Dependencies) *Services {
 	return &Services{
 		ToDo: NewToDoService(rep.ToDo),
 		Auth: NewAuthService(rep.User, deps.Hasher, deps.JwtManager),

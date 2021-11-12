@@ -17,6 +17,15 @@ func (h *Handler) InitTodoRoutes(router *gin.RouterGroup) {
 	}
 }
 
+// @Summary Getting one todo
+// @Description Get one todo by id
+// @Security ApiAuth
+// @Tags Todo
+// @Accept json
+// @Produce json
+// @Success 200 {object} SuccessResponse{data=domain.Todo}
+// @Failure 400,422,500 {object} ErrorResponse
+// @Router /todo/{id} [get]
 func (h *Handler) todoGetOne(ctx *gin.Context) {
 	id := ctx.Param("id")
 	userId, err := GetUserIdFromCtx(ctx)
@@ -34,6 +43,15 @@ func (h *Handler) todoGetOne(ctx *gin.Context) {
 	NewSuccessResponse(ctx, todo)
 }
 
+// @Summary Getting todos
+// @Description Get user todos
+// @Security ApiAuth
+// @Tags Todo
+// @Accept json
+// @Produce json
+// @Success 200 {object} SuccessResponse{data=[]domain.Todo}
+// @Failure 400,422,500 {object} ErrorResponse
+// @Router /todo [get]
 func (h *Handler) todoGetAll(ctx *gin.Context) {
 	userId, err := GetUserIdFromCtx(ctx)
 	if err != nil {
@@ -50,6 +68,16 @@ func (h *Handler) todoGetAll(ctx *gin.Context) {
 	NewSuccessResponse(ctx, todos)
 }
 
+// @Summary Creating todo
+// @Description Create todo by input data
+// @Security ApiAuth
+// @Tags Todo
+// @Accept json
+// @Produce json
+// @Param input body domain.CreateTodoInput true "input data"
+// @Success 200 {object} SuccessResponse{data=domain.Todo}
+// @Failure 400,422,500 {object} ErrorResponse
+// @Router /todo [post]
 func (h *Handler) todoCreate(ctx *gin.Context) {
 	var in domain.CreateTodoInput
 	if err := ctx.ShouldBind(&in); err != nil {
@@ -72,6 +100,16 @@ func (h *Handler) todoCreate(ctx *gin.Context) {
 	NewSuccessResponse(ctx, todo)
 }
 
+// @Summary Updating todo
+// @Description Update todo by input data
+// @Security ApiAuth
+// @Tags Todo
+// @Accept json
+// @Produce json
+// @Param input body domain.UpdateTodoInput true "input data"
+// @Success 200 {object} SuccessResponse{data=domain.Todo}
+// @Failure 400,422,500 {object} ErrorResponse
+// @Router /todo/{id} [put]
 func (h *Handler) todoUpdate(ctx *gin.Context) {
 	var in domain.UpdateTodoInput
 	if err := ctx.ShouldBind(&in); err != nil {
@@ -95,6 +133,15 @@ func (h *Handler) todoUpdate(ctx *gin.Context) {
 	NewSuccessResponse(ctx, todo)
 }
 
+// @Summary Deleting todo
+// @Description Delete todo by id
+// @Security ApiAuth
+// @Tags Todo
+// @Accept json
+// @Produce json
+// @Success 200 {object} SuccessResponse{data=object}
+// @Failure 400,422,500 {object} ErrorResponse
+// @Router /todo/{id} [delete]
 func (h *Handler) todoDelete(ctx *gin.Context) {
 	id := ctx.Param("id")
 	userId, err := GetUserIdFromCtx(ctx)

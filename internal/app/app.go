@@ -12,6 +12,17 @@ import (
 	"log"
 )
 
+// @title Golang ToDoApp API
+// @version 1.0
+// @description API Server for ToDoApp
+
+// @host localhost:8000
+// @BasePath /api/
+
+// @securityDefinitions.apikey ApiAuth
+// @in header
+// @name Authorization
+
 func Run(cfgPath, envPath string) {
 	cfg, err := config.Init(cfgPath, envPath)
 	if err != nil {
@@ -34,10 +45,10 @@ func Run(cfgPath, envPath string) {
 	}
 
 	repBuilder := builder.NewMongoRepositoriesBuilder(db)
-	services := service.NewServices(repBuilder.Build(), deps)
+	services := service.NewServices(repBuilder.Build(), &deps)
 	handler := delivery.NewHandler(services)
 
-	srv := server.NewServer(handler.Init(), cfg)
+	srv := server.NewServer(handler.Init(), &cfg)
 	if err := srv.Run(); err != nil {
 		log.Fatal(err.Error())
 	}

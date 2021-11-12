@@ -5,6 +5,11 @@ import (
 	v1 "github.com/i-vasilkov/go-todo-app/internal/delivery/http/v1"
 	"github.com/i-vasilkov/go-todo-app/internal/service"
 	"net/http"
+
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
+
+	_ "github.com/i-vasilkov/go-todo-app/docs"
 )
 
 type Handler struct {
@@ -20,7 +25,7 @@ func NewHandler(services *service.Services) *Handler {
 func (h *Handler) Init() http.Handler {
 	router := gin.Default()
 
-	router.GET("/", h.AppMsg)
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	handlerV1 := v1.NewHandler(h.services)
 	api := router.Group("/api")
@@ -29,8 +34,4 @@ func (h *Handler) Init() http.Handler {
 	}
 
 	return router
-}
-
-func (h *Handler) AppMsg(ctx *gin.Context) {
-	ctx.String(http.StatusOK, "Application is working")
 }
