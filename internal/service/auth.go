@@ -10,10 +10,10 @@ import (
 type AuthService struct {
 	rep    UserRepositoryI
 	hasher hash.Hasher
-	jwt    *jwtauth.Manager
+	jwt    jwtauth.TokenManagerI
 }
 
-func NewAuthService(rep UserRepositoryI, hasher hash.Hasher, jwt *jwtauth.Manager) *AuthService {
+func NewAuthService(rep UserRepositoryI, hasher hash.Hasher, jwt jwtauth.TokenManagerI) *AuthService {
 	return &AuthService{rep: rep, hasher: hasher, jwt: jwt}
 }
 
