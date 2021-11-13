@@ -5,7 +5,8 @@ import (
 	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
-	mock_http "github.com/i-vasilkov/go-todo-app/internal/handler/http/mocks"
+	"github.com/i-vasilkov/go-todo-app/internal/service"
+	"github.com/i-vasilkov/go-todo-app/internal/service/mocks"
 	"github.com/magiconair/properties/assert"
 	"net/http"
 	"net/http/httptest"
@@ -13,7 +14,7 @@ import (
 )
 
 func TestHandler_AuthMiddleware(t *testing.T) {
-	type mockBehaviour func(s *mock_http.MockAuthServiceI, token string)
+	type mockBehaviour func(s *mock_service.MockAuthServiceI, token string)
 
 	testCases := []struct {
 		name          string
@@ -29,7 +30,7 @@ func TestHandler_AuthMiddleware(t *testing.T) {
 			headerIsSet: true,
 			header:      "Bearer token",
 			token:       "token",
-			mockBehaviour: func(s *mock_http.MockAuthServiceI, token string) {
+			mockBehaviour: func(s *mock_service.MockAuthServiceI, token string) {
 				s.EXPECT().CheckToken(context.Background(), token).Return("userId", nil)
 			},
 			respStatusCode: http.StatusOK,
@@ -40,7 +41,7 @@ func TestHandler_AuthMiddleware(t *testing.T) {
 			headerIsSet:    false,
 			header:         "",
 			token:          "",
-			mockBehaviour:  func(s *mock_http.MockAuthServiceI, token string) {},
+			mockBehaviour:  func(s *mock_service.MockAuthServiceI, token string) {},
 			respStatusCode: http.StatusUnauthorized,
 			respBody:       `{"success":false,"messages":["empty auth header"]}`,
 		},
@@ -49,7 +50,7 @@ func TestHandler_AuthMiddleware(t *testing.T) {
 			headerIsSet:    true,
 			header:         "",
 			token:          "",
-			mockBehaviour:  func(s *mock_http.MockAuthServiceI, token string) {},
+			mockBehaviour:  func(s *mock_service.MockAuthServiceI, token string) {},
 			respStatusCode: http.StatusUnauthorized,
 			respBody:       `{"success":false,"messages":["empty auth header"]}`,
 		},
@@ -58,7 +59,7 @@ func TestHandler_AuthMiddleware(t *testing.T) {
 			headerIsSet:    true,
 			header:         "token",
 			token:          "",
-			mockBehaviour:  func(s *mock_http.MockAuthServiceI, token string) {},
+			mockBehaviour:  func(s *mock_service.MockAuthServiceI, token string) {},
 			respStatusCode: http.StatusUnauthorized,
 			respBody:       `{"success":false,"messages":["not valid auth header"]}`,
 		},
@@ -67,7 +68,7 @@ func TestHandler_AuthMiddleware(t *testing.T) {
 			headerIsSet:    true,
 			header:         "Bearer",
 			token:          "",
-			mockBehaviour:  func(s *mock_http.MockAuthServiceI, token string) {},
+			mockBehaviour:  func(s *mock_service.MockAuthServiceI, token string) {},
 			respStatusCode: http.StatusUnauthorized,
 			respBody:       `{"success":false,"messages":["not valid auth header"]}`,
 		},
@@ -76,7 +77,7 @@ func TestHandler_AuthMiddleware(t *testing.T) {
 			headerIsSet:    true,
 			header:         "NotBearer token",
 			token:          "",
-			mockBehaviour:  func(s *mock_http.MockAuthServiceI, token string) {},
+			mockBehaviour:  func(s *mock_service.MockAuthServiceI, token string) {},
 			respStatusCode: http.StatusUnauthorized,
 			respBody:       `{"success":false,"messages":["not valid auth header"]}`,
 		},
@@ -85,7 +86,7 @@ func TestHandler_AuthMiddleware(t *testing.T) {
 			headerIsSet:   true,
 			header:        "Bearer token",
 			token:         "token",
-			mockBehaviour: func(s *mock_http.MockAuthServiceI, token string) {
+			mockBehaviour: func(s *mock_service.MockAuthServiceI, token string) {
 				s.EXPECT().CheckToken(context.Background(), token).Return("", errors.New("service error"))
 			},
 			respStatusCode: http.StatusUnauthorized,
@@ -98,10 +99,10 @@ func TestHandler_AuthMiddleware(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			auth := mock_http.NewMockAuthServiceI(c)
+			auth := mock_service.NewMockAuthServiceI(c)
 			testCase.mockBehaviour(auth, testCase.token)
 
-			services := &Services{Auth: auth}
+			services := &service.Services{Auth: auth}
 			handler := NewHandler(services)
 
 			router := gin.New()

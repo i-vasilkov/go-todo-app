@@ -1,9 +1,9 @@
 package app
 
 import (
-	"github.com/i-vasilkov/go-todo-app/internal/builder"
 	"github.com/i-vasilkov/go-todo-app/internal/config"
 	delivery "github.com/i-vasilkov/go-todo-app/internal/handler/http"
+	"github.com/i-vasilkov/go-todo-app/internal/repository"
 	"github.com/i-vasilkov/go-todo-app/internal/server"
 	"github.com/i-vasilkov/go-todo-app/internal/service"
 	"github.com/i-vasilkov/go-todo-app/pkg/auth/jwt"
@@ -44,8 +44,8 @@ func Run(cfgPath, envPath string) {
 		JwtManager: jwt.NewManager(cfg.Jwt.Ttl, cfg.Jwt.Signature),
 	}
 
-	repBuilder := builder.NewMongoRepositoriesBuilder(db)
-	serviceBuilder := builder.NewAppServiceBuilder(&deps, repBuilder.Build())
+	repBuilder := repository.NewMongoRepositoriesBuilder(db)
+	serviceBuilder := service.NewAppServiceBuilder(&deps, repBuilder.Build())
 	handler := delivery.NewHandler(serviceBuilder.Build())
 
 	srv := server.NewServer(handler.Init(), &cfg)

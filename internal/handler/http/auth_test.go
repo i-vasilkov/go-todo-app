@@ -7,7 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/i-vasilkov/go-todo-app/internal/domain"
-	mock_http "github.com/i-vasilkov/go-todo-app/internal/handler/http/mocks"
+	"github.com/i-vasilkov/go-todo-app/internal/service"
+	"github.com/i-vasilkov/go-todo-app/internal/service/mocks"
 	"github.com/magiconair/properties/assert"
 	"net/http"
 	"net/http/httptest"
@@ -15,7 +16,7 @@ import (
 )
 
 func TestHandler_SignIn(t *testing.T) {
-	type mockBehavior func(s *mock_http.MockAuthServiceI, in domain.LoginUserInput)
+	type mockBehavior func(s *mock_service.MockAuthServiceI, in domain.LoginUserInput)
 
 	testCases := []struct {
 		name           string
@@ -32,7 +33,7 @@ func TestHandler_SignIn(t *testing.T) {
 				Login:    "test",
 				Password: "test",
 			},
-			mockBehavior: func(s *mock_http.MockAuthServiceI, in domain.LoginUserInput) {
+			mockBehavior: func(s *mock_service.MockAuthServiceI, in domain.LoginUserInput) {
 				s.EXPECT().SignIn(context.Background(), in).Return("token", nil)
 			},
 			respStatusCode: http.StatusOK,
@@ -42,7 +43,7 @@ func TestHandler_SignIn(t *testing.T) {
 			name:           "Empty login input",
 			inputReqBody:   `{"password":"test"}`,
 			inputObj:       domain.LoginUserInput{},
-			mockBehavior:   func(s *mock_http.MockAuthServiceI, in domain.LoginUserInput) {},
+			mockBehavior:   func(s *mock_service.MockAuthServiceI, in domain.LoginUserInput) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["invalid 'Login' input"]}`,
 		},
@@ -50,7 +51,7 @@ func TestHandler_SignIn(t *testing.T) {
 			name:           "Empty password input",
 			inputReqBody:   `{"login":"test"}`,
 			inputObj:       domain.LoginUserInput{},
-			mockBehavior:   func(s *mock_http.MockAuthServiceI, in domain.LoginUserInput) {},
+			mockBehavior:   func(s *mock_service.MockAuthServiceI, in domain.LoginUserInput) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["invalid 'Password' input"]}`,
 		},
@@ -58,7 +59,7 @@ func TestHandler_SignIn(t *testing.T) {
 			name:           "Empty input",
 			inputReqBody:   `{}`,
 			inputObj:       domain.LoginUserInput{},
-			mockBehavior:   func(s *mock_http.MockAuthServiceI, in domain.LoginUserInput) {},
+			mockBehavior:   func(s *mock_service.MockAuthServiceI, in domain.LoginUserInput) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["invalid 'Login' input","invalid 'Password' input"]}`,
 		},
@@ -66,7 +67,7 @@ func TestHandler_SignIn(t *testing.T) {
 			name:           "Empty body",
 			inputReqBody:   ``,
 			inputObj:       domain.LoginUserInput{},
-			mockBehavior:   func(s *mock_http.MockAuthServiceI, in domain.LoginUserInput) {},
+			mockBehavior:   func(s *mock_service.MockAuthServiceI, in domain.LoginUserInput) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["invalid input body"]}`,
 		},
@@ -77,7 +78,7 @@ func TestHandler_SignIn(t *testing.T) {
 				Login:    "test",
 				Password: "test",
 			},
-			mockBehavior: func(s *mock_http.MockAuthServiceI, in domain.LoginUserInput) {
+			mockBehavior: func(s *mock_service.MockAuthServiceI, in domain.LoginUserInput) {
 				s.EXPECT().SignIn(context.Background(), in).Return("", errors.New("service error"))
 			},
 			respStatusCode: http.StatusInternalServerError,
@@ -90,10 +91,10 @@ func TestHandler_SignIn(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			auth := mock_http.NewMockAuthServiceI(c)
+			auth := mock_service.NewMockAuthServiceI(c)
 			testCase.mockBehavior(auth, testCase.inputObj)
 
-			s := &Services{Auth: auth}
+			s := &service.Services{Auth: auth}
 			h := NewHandler(s)
 
 			r := gin.New()
@@ -111,7 +112,7 @@ func TestHandler_SignIn(t *testing.T) {
 }
 
 func TestHandler_SignUp(t *testing.T) {
-	type mockBehavior func(s *mock_http.MockAuthServiceI, in domain.CreateUserInput)
+	type mockBehavior func(s *mock_service.MockAuthServiceI, in domain.CreateUserInput)
 
 	testCases := []struct {
 		name          string
@@ -128,7 +129,7 @@ func TestHandler_SignUp(t *testing.T) {
 				Login:    "test",
 				Password: "test",
 			},
-			mockBehavior: func(s *mock_http.MockAuthServiceI, in domain.CreateUserInput) {
+			mockBehavior: func(s *mock_service.MockAuthServiceI, in domain.CreateUserInput) {
 				s.EXPECT().SignUp(context.Background(), in).Return("token", nil)
 			},
 			respStatusCode: http.StatusOK,
@@ -138,7 +139,7 @@ func TestHandler_SignUp(t *testing.T) {
 			name:           "Empty login input",
 			inputReqBody:   `{"password":"test"}`,
 			inputObj:       domain.CreateUserInput{},
-			mockBehavior:   func(s *mock_http.MockAuthServiceI, in domain.CreateUserInput) {},
+			mockBehavior:   func(s *mock_service.MockAuthServiceI, in domain.CreateUserInput) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["invalid 'Login' input"]}`,
 		},
@@ -146,7 +147,7 @@ func TestHandler_SignUp(t *testing.T) {
 			name:           "Empty password input",
 			inputReqBody:   `{"login":"test"}`,
 			inputObj:       domain.CreateUserInput{},
-			mockBehavior:   func(s *mock_http.MockAuthServiceI, in domain.CreateUserInput) {},
+			mockBehavior:   func(s *mock_service.MockAuthServiceI, in domain.CreateUserInput) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["invalid 'Password' input"]}`,
 		},
@@ -154,7 +155,7 @@ func TestHandler_SignUp(t *testing.T) {
 			name:           "Empty input",
 			inputReqBody:   `{}`,
 			inputObj:       domain.CreateUserInput{},
-			mockBehavior:   func(s *mock_http.MockAuthServiceI, in domain.CreateUserInput) {},
+			mockBehavior:   func(s *mock_service.MockAuthServiceI, in domain.CreateUserInput) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["invalid 'Login' input","invalid 'Password' input"]}`,
 		},
@@ -162,7 +163,7 @@ func TestHandler_SignUp(t *testing.T) {
 			name:           "Empty body",
 			inputReqBody:   ``,
 			inputObj:       domain.CreateUserInput{},
-			mockBehavior:   func(s *mock_http.MockAuthServiceI, in domain.CreateUserInput) {},
+			mockBehavior:   func(s *mock_service.MockAuthServiceI, in domain.CreateUserInput) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["invalid input body"]}`,
 		},
@@ -173,7 +174,7 @@ func TestHandler_SignUp(t *testing.T) {
 				Login:    "test",
 				Password: "test",
 			},
-			mockBehavior: func(s *mock_http.MockAuthServiceI, in domain.CreateUserInput) {
+			mockBehavior: func(s *mock_service.MockAuthServiceI, in domain.CreateUserInput) {
 				s.EXPECT().SignUp(context.Background(), in).Return("", errors.New("service error"))
 			},
 			respStatusCode: http.StatusInternalServerError,
@@ -186,10 +187,10 @@ func TestHandler_SignUp(t *testing.T) {
 			c := gomock.NewController(t)
 			defer c.Finish()
 
-			auth := mock_http.NewMockAuthServiceI(c)
+			auth := mock_service.NewMockAuthServiceI(c)
 			testCase.mockBehavior(auth, testCase.inputObj)
 
-			services := Services{Auth: auth}
+			services := service.Services{Auth: auth}
 			handler := NewHandler(&services)
 
 			router := gin.New()

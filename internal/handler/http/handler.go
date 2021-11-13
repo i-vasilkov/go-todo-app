@@ -2,6 +2,7 @@ package http
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/i-vasilkov/go-todo-app/internal/service"
 	"net/http"
 
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -11,15 +12,10 @@ import (
 )
 
 type Handler struct {
-	services *Services
+	services *service.Services
 }
 
-type Services struct {
-	Auth AuthServiceI
-	Task TaskServiceI
-}
-
-func NewHandler(services *Services) *Handler {
+func NewHandler(services *service.Services) *Handler {
 	return &Handler{
 		services: services,
 	}

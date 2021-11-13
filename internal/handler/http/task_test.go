@@ -8,7 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/i-vasilkov/go-todo-app/internal/domain"
-	mock_http "github.com/i-vasilkov/go-todo-app/internal/handler/http/mocks"
+	"github.com/i-vasilkov/go-todo-app/internal/service"
+	"github.com/i-vasilkov/go-todo-app/internal/service/mocks"
 	"github.com/magiconair/properties/assert"
 	"net/http"
 	"net/http/httptest"
@@ -17,7 +18,7 @@ import (
 )
 
 func TestHandler_taskGetOne(t *testing.T) {
-	type mockBehavior func(s *mock_http.MockTaskServiceI, id, userId string, task domain.Task)
+	type mockBehavior func(s *mock_service.MockTaskServiceI, id, userId string, task domain.Task)
 
 	testCases := []struct {
 		name           string
@@ -39,7 +40,7 @@ func TestHandler_taskGetOne(t *testing.T) {
 				CreatedAt: time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC),
 				UpdatedAt: time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC),
 			},
-			mockBehavior: func(s *mock_http.MockTaskServiceI, id, userId string, task domain.Task) {
+			mockBehavior: func(s *mock_service.MockTaskServiceI, id, userId string, task domain.Task) {
 				s.EXPECT().Get(context.Background(), id, userId).Return(task, nil)
 			},
 			respStatusCode: http.StatusOK,
@@ -50,7 +51,7 @@ func TestHandler_taskGetOne(t *testing.T) {
 			taskId:         "",
 			userId:         "userId",
 			task:           domain.Task{},
-			mockBehavior:   func(s *mock_http.MockTaskServiceI, id, userId string, task domain.Task) {},
+			mockBehavior:   func(s *mock_service.MockTaskServiceI, id, userId string, task domain.Task) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["empty task id"]}`,
 		},
@@ -59,7 +60,7 @@ func TestHandler_taskGetOne(t *testing.T) {
 			taskId:         "taskId",
 			userId:         "",
 			task:           domain.Task{},
-			mockBehavior:   func(s *mock_http.MockTaskServiceI, id, userId string, task domain.Task) {},
+			mockBehavior:   func(s *mock_service.MockTaskServiceI, id, userId string, task domain.Task) {},
 			respStatusCode: http.StatusUnauthorized,
 			respBody:       `{"success":false,"messages":["not exists userId in context"]}`,
 		},
@@ -68,7 +69,7 @@ func TestHandler_taskGetOne(t *testing.T) {
 			taskId: "taskId",
 			userId: "userId",
 			task:   domain.Task{},
-			mockBehavior: func(s *mock_http.MockTaskServiceI, id, userId string, task domain.Task) {
+			mockBehavior: func(s *mock_service.MockTaskServiceI, id, userId string, task domain.Task) {
 				s.EXPECT().Get(context.Background(), id, userId).Return(task, errors.New("service error"))
 			},
 			respStatusCode: http.StatusInternalServerError,
@@ -81,10 +82,10 @@ func TestHandler_taskGetOne(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			taskService := mock_http.NewMockTaskServiceI(ctrl)
+			taskService := mock_service.NewMockTaskServiceI(ctrl)
 			testCase.mockBehavior(taskService, testCase.taskId, testCase.userId, testCase.task)
 
-			services := &Services{Task: taskService}
+			services := &service.Services{Task: taskService}
 			handler := NewHandler(services)
 
 			router := gin.New()
@@ -107,7 +108,7 @@ func TestHandler_taskGetOne(t *testing.T) {
 }
 
 func TestHandler_taskDelete(t *testing.T) {
-	type mockBehavior func(s *mock_http.MockTaskServiceI, id, userId string)
+	type mockBehavior func(s *mock_service.MockTaskServiceI, id, userId string)
 
 	testCases := []struct {
 		name           string
@@ -121,7 +122,7 @@ func TestHandler_taskDelete(t *testing.T) {
 			name:   "OK",
 			taskId: "taskId",
 			userId: "userId",
-			mockBehavior: func(s *mock_http.MockTaskServiceI, id, userId string) {
+			mockBehavior: func(s *mock_service.MockTaskServiceI, id, userId string) {
 				s.EXPECT().Delete(context.Background(), id, userId).Return(nil)
 			},
 			respStatusCode: http.StatusOK,
@@ -131,7 +132,7 @@ func TestHandler_taskDelete(t *testing.T) {
 			name:           "Empty taskId",
 			taskId:         "",
 			userId:         "userId",
-			mockBehavior:   func(s *mock_http.MockTaskServiceI, id, userId string) {},
+			mockBehavior:   func(s *mock_service.MockTaskServiceI, id, userId string) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["empty task id"]}`,
 		},
@@ -139,7 +140,7 @@ func TestHandler_taskDelete(t *testing.T) {
 			name:           "Empty UserId",
 			taskId:         "taskId",
 			userId:         "",
-			mockBehavior:   func(s *mock_http.MockTaskServiceI, id, userId string) {},
+			mockBehavior:   func(s *mock_service.MockTaskServiceI, id, userId string) {},
 			respStatusCode: http.StatusUnauthorized,
 			respBody:       `{"success":false,"messages":["not exists userId in context"]}`,
 		},
@@ -147,7 +148,7 @@ func TestHandler_taskDelete(t *testing.T) {
 			name:   "Service error",
 			taskId: "taskId",
 			userId: "userId",
-			mockBehavior: func(s *mock_http.MockTaskServiceI, id, userId string) {
+			mockBehavior: func(s *mock_service.MockTaskServiceI, id, userId string) {
 				s.EXPECT().Delete(context.Background(), id, userId).Return(errors.New("service error"))
 			},
 			respStatusCode: http.StatusInternalServerError,
@@ -160,10 +161,10 @@ func TestHandler_taskDelete(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			taskService := mock_http.NewMockTaskServiceI(ctrl)
+			taskService := mock_service.NewMockTaskServiceI(ctrl)
 			testCase.mockBehavior(taskService, testCase.taskId, testCase.userId)
 
-			services := &Services{Task: taskService}
+			services := &service.Services{Task: taskService}
 			handler := NewHandler(services)
 
 			router := gin.New()
@@ -186,7 +187,7 @@ func TestHandler_taskDelete(t *testing.T) {
 }
 
 func TestHandler_taskUpdate(t *testing.T) {
-	type mockBehavior func(s *mock_http.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task)
+	type mockBehavior func(s *mock_service.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task)
 
 	testCases := []struct {
 		name           string
@@ -212,7 +213,7 @@ func TestHandler_taskUpdate(t *testing.T) {
 				CreatedAt: time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC),
 				UpdatedAt: time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC),
 			},
-			mockBehavior: func(s *mock_http.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task) {
+			mockBehavior: func(s *mock_service.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task) {
 				s.EXPECT().Update(context.Background(), id, userId, in).Return(task, nil)
 			},
 			respStatusCode: http.StatusOK,
@@ -225,7 +226,7 @@ func TestHandler_taskUpdate(t *testing.T) {
 			reqBody:        `{}`,
 			inputObj:       domain.UpdateTaskInput{Name: "updated"},
 			task:           domain.Task{},
-			mockBehavior:   func(s *mock_http.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task) {},
+			mockBehavior:   func(s *mock_service.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["invalid 'Name' input"]}`,
 		},
@@ -236,7 +237,7 @@ func TestHandler_taskUpdate(t *testing.T) {
 			reqBody:        `{"name":"updated"}`,
 			inputObj:       domain.UpdateTaskInput{Name: "updated"},
 			task:           domain.Task{},
-			mockBehavior:   func(s *mock_http.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task) {},
+			mockBehavior:   func(s *mock_service.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["empty task id"]}`,
 		},
@@ -247,7 +248,7 @@ func TestHandler_taskUpdate(t *testing.T) {
 			reqBody:        `{"name":"updated"}`,
 			inputObj:       domain.UpdateTaskInput{Name: "updated"},
 			task:           domain.Task{},
-			mockBehavior:   func(s *mock_http.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task) {},
+			mockBehavior:   func(s *mock_service.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task) {},
 			respStatusCode: http.StatusUnauthorized,
 			respBody:       `{"success":false,"messages":["not exists userId in context"]}`,
 		},
@@ -258,7 +259,7 @@ func TestHandler_taskUpdate(t *testing.T) {
 			reqBody:  `{"name":"updated"}`,
 			inputObj: domain.UpdateTaskInput{Name: "updated"},
 			task:     domain.Task{},
-			mockBehavior: func(s *mock_http.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task) {
+			mockBehavior: func(s *mock_service.MockTaskServiceI, id, userId string, in domain.UpdateTaskInput, task domain.Task) {
 				s.EXPECT().Update(context.Background(), id, userId, in).Return(task, errors.New("service error"))
 			},
 			respStatusCode: http.StatusInternalServerError,
@@ -271,10 +272,10 @@ func TestHandler_taskUpdate(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			taskService := mock_http.NewMockTaskServiceI(ctrl)
+			taskService := mock_service.NewMockTaskServiceI(ctrl)
 			testCase.mockBehavior(taskService, testCase.taskId, testCase.userId, testCase.inputObj, testCase.task)
 
-			services := &Services{Task: taskService}
+			services := &service.Services{Task: taskService}
 			handler := NewHandler(services)
 
 			router := gin.New()
@@ -297,7 +298,7 @@ func TestHandler_taskUpdate(t *testing.T) {
 }
 
 func TestHandler_taskCreate(t *testing.T) {
-	type mockBehavior func(s *mock_http.MockTaskServiceI, userId string, in domain.CreateTaskInput, task domain.Task)
+	type mockBehavior func(s *mock_service.MockTaskServiceI, userId string, in domain.CreateTaskInput, task domain.Task)
 
 	testCases := []struct {
 		name           string
@@ -321,7 +322,7 @@ func TestHandler_taskCreate(t *testing.T) {
 				CreatedAt: time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC),
 				UpdatedAt: time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC),
 			},
-			mockBehavior: func(s *mock_http.MockTaskServiceI, userId string, in domain.CreateTaskInput, task domain.Task) {
+			mockBehavior: func(s *mock_service.MockTaskServiceI, userId string, in domain.CreateTaskInput, task domain.Task) {
 				s.EXPECT().Create(context.Background(), userId, in).Return(task, nil)
 			},
 			respStatusCode: http.StatusOK,
@@ -333,7 +334,7 @@ func TestHandler_taskCreate(t *testing.T) {
 			reqBody:        `{}`,
 			inputObj:       domain.CreateTaskInput{Name: "test"},
 			task:           domain.Task{},
-			mockBehavior:   func(s *mock_http.MockTaskServiceI, userId string, in domain.CreateTaskInput, task domain.Task) {},
+			mockBehavior:   func(s *mock_service.MockTaskServiceI, userId string, in domain.CreateTaskInput, task domain.Task) {},
 			respStatusCode: http.StatusBadRequest,
 			respBody:       `{"success":false,"messages":["invalid 'Name' input"]}`,
 		},
@@ -343,7 +344,7 @@ func TestHandler_taskCreate(t *testing.T) {
 			reqBody:        `{"name":"test"}`,
 			inputObj:       domain.CreateTaskInput{Name: "test"},
 			task:           domain.Task{},
-			mockBehavior:   func(s *mock_http.MockTaskServiceI, userId string, in domain.CreateTaskInput, task domain.Task) {},
+			mockBehavior:   func(s *mock_service.MockTaskServiceI, userId string, in domain.CreateTaskInput, task domain.Task) {},
 			respStatusCode: http.StatusUnauthorized,
 			respBody:       `{"success":false,"messages":["not exists userId in context"]}`,
 		},
@@ -353,7 +354,7 @@ func TestHandler_taskCreate(t *testing.T) {
 			reqBody:  `{"name":"test"}`,
 			inputObj: domain.CreateTaskInput{Name: "test"},
 			task:     domain.Task{},
-			mockBehavior: func(s *mock_http.MockTaskServiceI, userId string, in domain.CreateTaskInput, task domain.Task) {
+			mockBehavior: func(s *mock_service.MockTaskServiceI, userId string, in domain.CreateTaskInput, task domain.Task) {
 				s.EXPECT().Create(context.Background(), userId, in).Return(task, errors.New("service error"))
 			},
 			respStatusCode: http.StatusInternalServerError,
@@ -366,10 +367,10 @@ func TestHandler_taskCreate(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			taskService := mock_http.NewMockTaskServiceI(ctrl)
+			taskService := mock_service.NewMockTaskServiceI(ctrl)
 			testCase.mockBehavior(taskService, testCase.userId, testCase.inputObj, testCase.task)
 
-			services := &Services{Task: taskService}
+			services := &service.Services{Task: taskService}
 			handler := NewHandler(services)
 
 			router := gin.New()
@@ -391,7 +392,7 @@ func TestHandler_taskCreate(t *testing.T) {
 }
 
 func TestHandler_taskGetAll(t *testing.T) {
-	type mockBehavior func(s *mock_http.MockTaskServiceI, userId string, tasks []domain.Task)
+	type mockBehavior func(s *mock_service.MockTaskServiceI, userId string, tasks []domain.Task)
 
 	testCases := []struct {
 		name           string
@@ -413,7 +414,7 @@ func TestHandler_taskGetAll(t *testing.T) {
 					UpdatedAt: time.Date(2020, 01, 01, 0, 0, 0, 0, time.UTC),
 				},
 			},
-			mockBehavior: func(s *mock_http.MockTaskServiceI, userId string, tasks []domain.Task) {
+			mockBehavior: func(s *mock_service.MockTaskServiceI, userId string, tasks []domain.Task) {
 				s.EXPECT().GetAll(context.Background(), userId).Return(tasks, nil)
 			},
 			respStatusCode: http.StatusOK,
@@ -423,7 +424,7 @@ func TestHandler_taskGetAll(t *testing.T) {
 			name:           "Empty UserId",
 			userId:         "",
 			tasks:          nil,
-			mockBehavior:   func(s *mock_http.MockTaskServiceI, userId string, tasks []domain.Task) {},
+			mockBehavior:   func(s *mock_service.MockTaskServiceI, userId string, tasks []domain.Task) {},
 			respStatusCode: http.StatusUnauthorized,
 			respBody:       `{"success":false,"messages":["not exists userId in context"]}`,
 		},
@@ -431,7 +432,7 @@ func TestHandler_taskGetAll(t *testing.T) {
 			name:   "Service error",
 			userId: "userId",
 			tasks:   nil,
-			mockBehavior: func(s *mock_http.MockTaskServiceI, userId string, tasks []domain.Task) {
+			mockBehavior: func(s *mock_service.MockTaskServiceI, userId string, tasks []domain.Task) {
 				s.EXPECT().GetAll(context.Background(), userId).Return(tasks, errors.New("service error"))
 			},
 			respStatusCode: http.StatusInternalServerError,
@@ -444,10 +445,10 @@ func TestHandler_taskGetAll(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			taskService := mock_http.NewMockTaskServiceI(ctrl)
+			taskService := mock_service.NewMockTaskServiceI(ctrl)
 			testCase.mockBehavior(taskService, testCase.userId, testCase.tasks)
 
-			services := &Services{Task: taskService}
+			services := &service.Services{Task: taskService}
 			handler := NewHandler(services)
 
 			router := gin.New()

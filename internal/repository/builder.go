@@ -1,4 +1,4 @@
-package builder
+package repository
 
 import (
 	"github.com/i-vasilkov/go-todo-app/internal/repository/mongorep"
