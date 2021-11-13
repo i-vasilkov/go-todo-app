@@ -1,7 +1,6 @@
 package http
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/i-vasilkov/go-todo-app/internal/domain"
 	"net/http"
@@ -26,14 +25,15 @@ func (h *Handler) InitAuthRoutes(router *gin.RouterGroup) {
 // @Router /auth/sign-in [post]
 func (h *Handler) authSignIn(ctx *gin.Context) {
 	var in domain.LoginUserInput
-	if err := ctx.ShouldBind(&in); err != nil {
+	if err := ctx.BindJSON(&in); err != nil {
 		NewValidatorErrorResponse(ctx, err)
+		//NewErrorResponseFromError(ctx, http.StatusBadRequest, errors.New("invalid input body"))
 		return
 	}
 
-	token, err := h.services.Auth.SignIn(ctx, in)
+	token, err := h.services.Auth.SignIn(ctx.Request.Context(), in)
 	if err != nil {
-		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+		NewErrorResponseFromError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -51,16 +51,14 @@ func (h *Handler) authSignIn(ctx *gin.Context) {
 // @Router /auth/sign-up [post]
 func (h *Handler) authSignUp(ctx *gin.Context) {
 	var in domain.CreateUserInput
-	if err := ctx.ShouldBind(&in); err != nil {
+	if err := ctx.BindJSON(&in); err != nil {
 		NewValidatorErrorResponse(ctx, err)
 		return
 	}
 
-	fmt.Println(in)
-
-	token, err := h.services.Auth.SignUp(ctx, in)
+	token, err := h.services.Auth.SignUp(ctx.Request.Context(), in)
 	if err != nil {
-		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+		NewErrorResponseFromError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 

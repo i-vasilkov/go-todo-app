@@ -5,6 +5,8 @@ import (
 	"github.com/i-vasilkov/go-todo-app/internal/domain"
 )
 
+//go:generate mockgen -source=service_interface.go -destination=mocks/mock.go
+
 type AuthServiceI interface {
 	SignUp(ctx context.Context, in domain.CreateUserInput) (string, error)
 	SignIn(ctx context.Context, in domain.LoginUserInput) (string, error)

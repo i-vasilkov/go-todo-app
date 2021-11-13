@@ -27,7 +27,7 @@ func (h *Handler) AuthMiddleware(ctx *gin.Context) {
 		return
 	}
 
-	id, err := h.services.Auth.CheckToken(ctx, headerParts[1])
+	id, err := h.services.Auth.CheckToken(ctx.Request.Context(), headerParts[1])
 	if err != nil {
 		NewErrorResponseFromError(ctx, http.StatusUnauthorized, err)
 		return

@@ -1,6 +1,7 @@
 package http
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github.com/i-vasilkov/go-todo-app/internal/domain"
 	"net/http"
@@ -28,15 +29,20 @@ func (h *Handler) InitTaskRoutes(router *gin.RouterGroup) {
 // @Router /task/{id} [get]
 func (h *Handler) taskGetOne(ctx *gin.Context) {
 	id := ctx.Param("id")
+	if id == "" {
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, errors.New("empty task id"))
+		return
+	}
+
 	userId, err := GetUserIdFromCtx(ctx)
 	if err != nil {
 		NewErrorResponseFromError(ctx, http.StatusUnauthorized, err)
 		return
 	}
 
-	task, err := h.services.Task.Get(ctx, id, userId)
+	task, err := h.services.Task.Get(ctx.Request.Context(), id, userId)
 	if err != nil {
-		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+		NewErrorResponseFromError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -59,9 +65,9 @@ func (h *Handler) taskGetAll(ctx *gin.Context) {
 		return
 	}
 
-	tasks, err := h.services.Task.GetAll(ctx, userId)
+	tasks, err := h.services.Task.GetAll(ctx.Request.Context(), userId)
 	if err != nil {
-		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+		NewErrorResponseFromError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -80,7 +86,7 @@ func (h *Handler) taskGetAll(ctx *gin.Context) {
 // @Router /task [post]
 func (h *Handler) taskCreate(ctx *gin.Context) {
 	var in domain.CreateTaskInput
-	if err := ctx.ShouldBind(&in); err != nil {
+	if err := ctx.BindJSON(&in); err != nil {
 		NewValidatorErrorResponse(ctx, err)
 		return
 	}
@@ -91,9 +97,9 @@ func (h *Handler) taskCreate(ctx *gin.Context) {
 		return
 	}
 
-	task, err := h.services.Task.Create(ctx, userId, in)
+	task, err := h.services.Task.Create(ctx.Request.Context(), userId, in)
 	if err != nil {
-		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+		NewErrorResponseFromError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -112,21 +118,26 @@ func (h *Handler) taskCreate(ctx *gin.Context) {
 // @Router /task/{id} [put]
 func (h *Handler) taskUpdate(ctx *gin.Context) {
 	var in domain.UpdateTaskInput
-	if err := ctx.ShouldBind(&in); err != nil {
+	if err := ctx.BindJSON(&in); err != nil {
 		NewValidatorErrorResponse(ctx, err)
 		return
 	}
 
 	id := ctx.Param("id")
+	if id == "" {
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, errors.New("empty task id"))
+		return
+	}
+
 	userId, err := GetUserIdFromCtx(ctx)
 	if err != nil {
 		NewErrorResponseFromError(ctx, http.StatusUnauthorized, err)
 		return
 	}
 
-	task, err := h.services.Task.Update(ctx, id, userId, in)
+	task, err := h.services.Task.Update(ctx.Request.Context(), id, userId, in)
 	if err != nil {
-		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+		NewErrorResponseFromError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -144,14 +155,19 @@ func (h *Handler) taskUpdate(ctx *gin.Context) {
 // @Router /task/{id} [delete]
 func (h *Handler) taskDelete(ctx *gin.Context) {
 	id := ctx.Param("id")
+	if id == "" {
+		NewErrorResponseFromError(ctx, http.StatusBadRequest, errors.New("empty task id"))
+		return
+	}
+
 	userId, err := GetUserIdFromCtx(ctx)
 	if err != nil {
 		NewErrorResponseFromError(ctx, http.StatusUnauthorized, err)
 		return
 	}
 
-	if err := h.services.Task.Delete(ctx, id, userId); err != nil {
-		NewErrorResponseFromError(ctx, http.StatusBadRequest, err)
+	if err := h.services.Task.Delete(ctx.Request.Context(), id, userId); err != nil {
+		NewErrorResponseFromError(ctx, http.StatusInternalServerError, err)
 		return
 	}
 

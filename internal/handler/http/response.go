@@ -1,6 +1,7 @@
 package http
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"log"
@@ -28,8 +29,15 @@ func NewErrorResponseFromError(ctx *gin.Context, code int, err error) {
 
 func NewValidatorErrorResponse(ctx *gin.Context, err error) {
 	var messages []string
-	for _, fieldErr := range err.(validator.ValidationErrors) {
-		messages = append(messages, fieldErr.Error())
+
+	validatorErrors, ok := err.(validator.ValidationErrors)
+	if !ok {
+		NewErrorResponse(ctx, http.StatusBadRequest, []string{"invalid input body"})
+		return
+	}
+
+	for _, fieldErr := range validatorErrors {
+		messages = append(messages, fmt.Sprintf("invalid '%v' input", fieldErr.Field()))
 	}
 	NewErrorResponse(ctx, http.StatusBadRequest, messages)
 }
