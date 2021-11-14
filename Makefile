@@ -7,3 +7,9 @@ run: build
 
 swag:
 	swag init -g internal/app/app.go
+
+test:
+	go test ./...
+
+lint:
+	golangci-lint run

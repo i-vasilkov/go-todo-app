@@ -106,6 +106,9 @@ func (rep *TaskRepository) Update(ctx context.Context, id, userId string, in dom
 
 	update := bson.M{"$set": bson.M{"name": in.Name, "updated_at": time.Now().Format(time.RFC3339)}}
 	_, err = rep.db.Collection(tasksCollection).UpdateOne(ctx, bson.M{"_id": objId, "user_id": userObjId}, update)
+	if err != nil {
+		return domain.Task{}, err
+	}
 
 	var tasks domain.Task
 	err = rep.db.Collection(tasksCollection).
