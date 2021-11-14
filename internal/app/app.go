@@ -10,6 +10,7 @@ import (
 	"github.com/i-vasilkov/go-todo-app/pkg/auth/jwt"
 	"github.com/i-vasilkov/go-todo-app/pkg/database/mongodb"
 	"github.com/i-vasilkov/go-todo-app/pkg/hash"
+	_ "github.com/lib/pq"
 	"log"
 	"os"
 	"os/signal"

@@ -8,10 +8,11 @@ import (
 )
 
 type Config struct {
-	Mongo MongoConfig
-	Http  HttpConfig
-	Auth  AuthConfig
-	Jwt   JwtConfig
+	Mongo    MongoConfig
+	Postgres PostgresConfig
+	Http     HttpConfig
+	Auth     AuthConfig
+	Jwt      JwtConfig
 }
 
 type MongoConfig struct {
@@ -23,7 +24,7 @@ type MongoConfig struct {
 }
 
 func (mc *MongoConfig) GetURI() string {
-	return fmt.Sprintf("%s:%s", mc.Host, mc.Port)
+	return fmt.Sprintf("mongodb://%s:%s", mc.Host, mc.Port)
 }
 
 type HttpConfig struct {
@@ -44,6 +45,15 @@ type AuthConfig struct {
 type JwtConfig struct {
 	Signature string        `mapstructure:"JWT_SIGN"`
 	Ttl       time.Duration `mapstructure:"ttl"`
+}
+
+type PostgresConfig struct {
+	User     string `mapstructure:"POSTGRES_USER"`
+	Password string `mapstructure:"POSTGRES_PASSWORD"`
+	Port     string `mapstructure:"POSTGRES_PORT"`
+	Host     string `mapstructure:"POSTGRES_HOST"`
+	Database string `mapstructure:"POSTGRES_DB"`
+	SSLMode  string `mapstructure:"POSTGRES_SSLMode"`
 }
 
 func Init(paths ...string) (Config, error) {
@@ -80,6 +90,10 @@ func UnmarshalConfig() (Config, error) {
 		return cfg, err
 	}
 
+	if err := UnmarshalPostgresCfg(&cfg); err != nil {
+		return cfg, err
+	}
+
 	if err := UnmarshalHttpCfg(&cfg); err != nil {
 		return cfg, err
 	}
@@ -97,6 +111,10 @@ func UnmarshalConfig() (Config, error) {
 
 func UnmarshalMongoCfg(cfg *Config) error {
 	return viper.Unmarshal(&cfg.Mongo)
+}
+
+func UnmarshalPostgresCfg(cfg *Config) error {
+	return viper.Unmarshal(&cfg.Postgres)
 }
 
 func UnmarshalHttpCfg(cfg *Config) error {
