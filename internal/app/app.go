@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"github.com/i-vasilkov/go-todo-app/internal/config"
 	delivery "github.com/i-vasilkov/go-todo-app/internal/handler/http"
 	"github.com/i-vasilkov/go-todo-app/internal/repository"
@@ -10,6 +11,10 @@ import (
 	"github.com/i-vasilkov/go-todo-app/pkg/database/mongodb"
 	"github.com/i-vasilkov/go-todo-app/pkg/hash"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 // @title Golang ToDoApp API
@@ -49,7 +54,27 @@ func Run(cfgPath, envPath string) {
 	handler := delivery.NewHandler(serviceBuilder.Build())
 
 	srv := server.NewServer(handler.Init(), &cfg)
-	if err := srv.Run(); err != nil {
+	go func() {
+		if err := srv.Run(); err != nil {
+			log.Fatal(err.Error())
+		}
+	}()
+
+	// Graceful shutdown
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+
+	<-quit
+
+	timeout := time.Second * 5
+	ctx, shutdown := context.WithTimeout(context.Background(), timeout)
+	defer shutdown()
+
+	if err := srv.Stop(ctx); err != nil {
+		log.Fatal(err.Error())
+	}
+
+	if err := mongoClient.Disconnect(context.Background()); err != nil {
 		log.Fatal(err.Error())
 	}
 }
